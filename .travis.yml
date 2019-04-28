@@ -4,7 +4,7 @@ script:
     LDFLAGS="-llapack -Wl,-fuse-ld=gold"
     INCDIRS="$XROOT/usr/include"
     LIBDIRS="$XROOT/usr/lib"
-      create-travis-release.sh
+      bash create-travis-release.sh
 notifications:
   email: false
 language: cpp
