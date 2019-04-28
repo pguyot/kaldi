@@ -1,5 +1,10 @@
 script:
-- bash create-travis-release.sh
+  - CXX="ccache clang++-3.8 -Qunused-arguments -fcolor-diagnostics -Wno-tautological-compare"
+    CFLAGS=""
+    LDFLAGS="-llapack -Wl,-fuse-ld=gold"
+    INCDIRS="$XROOT/usr/include"
+    LIBDIRS="$XROOT/usr/lib"
+      create-travis-release.sh
 notifications:
   email: false
 language: cpp
