@@ -1,6 +1,6 @@
 #!/bin/bash
 cd /opt && git clone https://github.com/pguyot/kaldi.git
-cd /opt/kaldi/tools && extras/install_mkl.sh
+cd /opt/kaldi/tools && sudo extras/install_mkl.sh
 sudo apt-get install automake autoconf sox libtool subversion
 cd /opt/kaldi/tools && make -j 8
 cd /opt/kaldi/src && ./configure --shared && make -j 8
