@@ -22,7 +22,7 @@ addons:
     - sox
 branches:
   only:
-  - master
+  - travis-release
 before_install:
 - cat /proc/sys/kernel/core_pattern
 - export XROOT=~/xroot
