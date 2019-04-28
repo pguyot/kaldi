@@ -1,62 +1,54 @@
+script:
+- bash create-travis-release.sh
 notifications:
   email: false
-
 language: cpp
-
 cache:
   directories:
-  - $HOME/.ccache
-
+  - "$HOME/.ccache"
 os:
-  - linux
-
+- linux
 addons:
   apt:
     sources:
-      - ubuntu-toolchain-r-test
-      - llvm-toolchain-precise-3.8
+    - ubuntu-toolchain-r-test
+    - llvm-toolchain-precise-3.8
     packages:
-      - gdb
-      - g++-4.9
-      - gfortran-4.9
-      - liblapack-dev
-      - clang-3.8
-      - sox
-
+    - gdb
+    - g++-4.9
+    - gfortran-4.9
+    - liblapack-dev
+    - clang-3.8
+    - sox
 branches:
   only:
-    - master
-
+  - master
 before_install:
-  - cat /proc/sys/kernel/core_pattern
-  - export XROOT=~/xroot
-  - tools/extras/travis_install_bindeps.sh $XROOT
-  - export PATH=$XROOT/usr/bin:$PATH
-
+- cat /proc/sys/kernel/core_pattern
+- export XROOT=~/xroot
+- tools/extras/travis_install_bindeps.sh $XROOT
+- export PATH=$XROOT/usr/bin:$PATH
 before_script:
-  - which ccache
-  - ccache --version
-  - ccache --show-stats
-  - ccache --zero-stats --max-size=3G
-
+- which ccache
+- ccache --version
+- ccache --show-stats
+- ccache --zero-stats --max-size=3G
 env:
-  - CI_TARGETS="all ext"        # Job1: Build everything.
-  - CI_TARGETS="test"           # Job2: Test libraries. #### ext_test? adds 5min compile, runs 1 test.
-
+- CI_TARGETS="all ext"
+- CI_TARGETS="test"
 script:
-  # See http://petereisentraut.blogspot.com/2011/05/ccache-and-clang.html and
-  # http://peter.eisentraut.org/blog/2014/12/01/ccache-and-clang-part-3/
-  # for the explanation why extra switches needed for clang with ccache.
-  - CXX="ccache clang++-3.8 -Qunused-arguments -fcolor-diagnostics -Wno-tautological-compare"
-    CFLAGS=""
-    LDFLAGS="-llapack -Wl,-fuse-ld=gold"
-    INCDIRS="$XROOT/usr/include"
-    LIBDIRS="$XROOT/usr/lib"
-      tools/extras/travis_script.sh
-#   To troubleshoot cache, add to above: CI_TARGETS=util CCACHE_LOGFILE=~/ccache.log
-
+- CXX="ccache clang++-3.8 -Qunused-arguments -fcolor-diagnostics -Wno-tautological-compare"
+  CFLAGS="" LDFLAGS="-llapack -Wl,-fuse-ld=gold" INCDIRS="$XROOT/usr/include" LIBDIRS="$XROOT/usr/lib"
+  tools/extras/travis_script.sh
 before_cache:
-  - ccache --show-stats
-
+- ccache --show-stats
 after_failure:
-  - tools/extras/travis_show_failures.sh
+- tools/extras/travis_show_failures.sh
+deploy:
+  provider: releases
+  api_key:
+    secure: iGmXz1eOzQA4aDsBq2xaveeakwzDUfyOEnuYw93RYfd7mEhHszyNqwwEU34o5NN2r2qLRt+Z/d4ExOZhOZXGRj/z0Nkh5SIjOExYT/NkTRrfCmwG7NJFYDjPbg0Ea+6x4+LXF6iUX+kVWAuB7KAmoGxW1EjlXcAts2t0rCNiwGcFoNjnmZSFcxHxqZ2JjudE9+pKHgC63SL8iq9KAyhtl0px9nG6nmxzXgQKgtJ3QfhGte0FXTjHdR/Cs1Om8X3Rj/iQpjte45Fmb1KtlRdXn5zc9ofppQz3hntf5oK962F2QigR7OGh4FO9RT8c32PU/WFwm09jXR+DcEO0WX7WflPhuM5jB7rS5CBWch/LT8DzmOnhiP4UvTALLgZLG2QXZlNjco74EUUrIVhjIQyrfkwy2iP4AYvugjHFRhg3B800OPLcWHmw31LZl+ktE2F8sKQ0fgkz1nWGUj/9agjsXGvjLg/tcQRy2sCJe9M9BMWw7sG6eTvpxmQ8KiXTjGkIs1XGFjVpNptgy/NiKxbl2xtO+nKB/WR8lJV0ysEVrgWSyza2FrhCgxPOc0w2M2sRzKseWP3wBotLJ1llyaPeCPpmmrvaQGkgcpj6HLgSV8ttDR+naVo6/K8itA4E8EW2spTJoLSWYeAKCFs75ITRnzu6K0QQqVcA3+3ak6veCmI=
+  file: kaldi-c3260f2-linux_x86_64-vfp.tar.xz
+  on:
+    repo: pguyot/kaldi
+    branch: travis-release
